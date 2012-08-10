@@ -469,6 +469,12 @@ class games extends Object {
     }
 
     public function oneonone() {
+        $id = $this->params('id', array(
+            'validate' => array(
+                'table' => 'games',
+                'field' => 'id',
+            )
+        ));
         return $this->endGame($id, $userId, true);
     }
 
