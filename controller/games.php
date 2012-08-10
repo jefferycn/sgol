@@ -130,9 +130,11 @@ class games extends Object {
         $players = $this->getCurrentPlayers($gameId);
         $gameUsers = array();
         $status = 0;
+        $gameTypeId = 0;
         foreach($players as $item) {
             $userId = $item['user_id'];
             $status = $item['status'];
+            $gameTypeId = $item['game_type_id'];
             $username = $item['username'];
             $currentUser = array(
                 'id' => $userId,
@@ -145,6 +147,7 @@ class games extends Object {
             'status' => $status,
             'players' => $players,
             'users' => $gameUsers,
+            'playerCount' => count($this->getAllPlayers($gameTypeId)),
         );
     }
 
