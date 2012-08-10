@@ -19,7 +19,7 @@
     </head>
     <body>
         <!-- Home -->
-        <div data-role="page" id="page1">
+        <div data-role="page" id="new">
             <div data-theme="a" data-role="header">
                 <h5>
                     New game

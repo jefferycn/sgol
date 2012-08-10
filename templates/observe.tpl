@@ -19,7 +19,7 @@
     </head>
     <body>
         <!-- Home -->
-        <div data-role="page" id="page1">
+        <div data-role="page" id="observe">
             <div data-theme="a" data-role="header">
                 <h5>
                     You are in game #<?php echo $id; ?>

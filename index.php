@@ -124,9 +124,14 @@ $app->get('/games/:action(/:api)', function ($action, $api = false) use ($app) {
                 $view->setData($data);
                 $app->render("observe.tpl");
                 break;
+            case 'kill':
+                $view = $app->view();
+                $view->setData($data);
+                $app->render("kill.tpl");
+                break;
             case 'killed':
             case 'open':
-                $app->response()->redirect('/games/observe?id=' . $data);
+                $app->response()->redirect('/games/myrole?id=' . $data);
                 break;
             default:
         }

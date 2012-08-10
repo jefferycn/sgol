@@ -20,20 +20,25 @@
     <body>
 <?php
 $gameId = $role['game_id'];
+$gameName = $role['game_name'];
 $username = $role['username'];
 $gameRole = $role['name'];
 $gameSeat = $role['seat'];
 $credits = $role['credits'];
+$status = $role['status'];
 ?>
         <!-- Home -->
-        <div data-role="page" id="page1">
+        <div data-role="page" id="myrole">
             <div data-theme="a" data-role="header">
                 <h5>
-                    <?php echo $username; ?>, You are in game #<?php echo $gameId; ?>
+                    游戏 #<?php echo $gameId; ?>
                 </h5>
             </div>
             <div data-role="content" style="padding: 15px">
                 <ul data-role="listview" data-divider-theme="b" data-inset="false">
+                    <li data-theme="c">
+                        游戏: <?php echo $gameName; ?></span>
+                    </li>
                     <li data-theme="e">
                         身份: <?php echo $gameRole; ?></span>
                     </li>
@@ -45,6 +50,17 @@ if($credits) {
 ?>
                     <li data-theme="c">
                         得分: <?php echo $credits; ?>
+                    </li>
+<?php
+}
+?>
+<?php
+if($status) {
+?>
+                    <li data-theme="c">
+                        <a href="/games/kill?id=<?php echo $gameId; ?>" data-transition="slide">
+                            被杀了?
+                        </a>
                     </li>
 <?php
 }

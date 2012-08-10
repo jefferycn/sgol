@@ -40,11 +40,11 @@ class games extends Object {
         if($conn->insert("games", $game)) {
             $gameId = $conn->lastInsertId();
             if($this->assign($gameId, $this->userId)) {
-                //$this->assign($gameId, 2);
-                //$this->assign($gameId, 3);
-                //$this->assign($gameId, 4);
-                //$this->assign($gameId, 5);
-                //$this->assign($gameId, 6);
+                $this->assign($gameId, 2);
+                $this->assign($gameId, 3);
+                $this->assign($gameId, 4);
+                $this->assign($gameId, 5);
+                $this->assign($gameId, 6);
                 $response = $gameId;
             }else {
                 $response = false;
@@ -66,6 +66,42 @@ class games extends Object {
         $this->assign($gameId, $this->userId);
 
         return $gameId;
+    }
+
+    public function kill() {
+        $item = $this->myrole();
+        $gameId = $this->params('id', array(
+            'validate' => array(
+                'table' => 'games',
+                'field' => 'id',
+            )
+        ));
+        $players = $this->getCurrentPlayers($gameId);
+        $gameUsers = array();
+        $killedBy = 0;
+        $userName = "";
+        foreach($players as $item) {
+            $status = $item['status'];
+            $userId = $item['user_id'];
+            $username = $item['username'];
+            if($userId == $this->userId) {
+                $killedBy = $item['killed_by'];
+                $userName = $item['username'];
+            }
+            $currentUser = array(
+                'id' => $userId,
+                'username' => $username
+            );
+            $gameUsers[$userId] = $currentUser;
+        }
+        return array(
+            'id' => $gameId,
+            'status' => $status,
+            'killedBy' => $killedBy,
+            'userId' => $this->userId,
+            'userName' => $userName,
+            'users' => $gameUsers,
+        );
     }
 
     public function myrole() {
@@ -93,8 +129,10 @@ class games extends Object {
         ));
         $players = $this->getCurrentPlayers($gameId);
         $gameUsers = array();
+        $status = 0;
         foreach($players as $item) {
             $userId = $item['user_id'];
+            $status = $item['status'];
             $username = $item['username'];
             $currentUser = array(
                 'id' => $userId,
@@ -104,7 +142,7 @@ class games extends Object {
         }
         return array(
             'id' => $gameId,
-            'status' => $this->getGameStatus($gameId),
+            'status' => $status,
             'players' => $players,
             'users' => $gameUsers,
         );
@@ -154,9 +192,9 @@ class games extends Object {
 
     protected function getCurrentPlayers($gameId) {
         $sql = "select
-            game_id, role_id, a.user_id, username, c.name, killed_by, seat, a.credits
-            from game_assignments a, users b, roles c
-            where game_id = ? and a.user_id = b.id and a.role_id = c.id";
+            game_id, role_id, a.user_id, username, c.name, killed_by, seat, a.credits, d.status, d.game_type_id, e.name as game_name
+            from game_assignments a, users b, roles c, games d, game_types e
+            where game_id = ? and a.user_id = b.id and a.role_id = c.id and d.id = a.game_id and d.game_type_id = e.id";
         $options = array($gameId);
         $conn = $this->getDB();
         return $conn->getRows($sql, $options);

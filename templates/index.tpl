@@ -19,10 +19,10 @@
     </head>
     <body>
         <!-- Home -->
-        <div data-role="page" id="page1">
+        <div data-role="page" id="index">
             <div data-theme="a" data-role="header">
                 <h5>
-                    Hello, <?php echo $user['first_name']; ?>
+                    我是 <?php echo $user['first_name']; ?>
                 </h5>
             </div>
             <div data-role="content" style="padding: 15px">
