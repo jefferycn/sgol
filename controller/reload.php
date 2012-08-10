@@ -149,6 +149,12 @@ class reload extends Object {
                 'email' => 'zhibin.huang@symbio.com',
                 'pwd' => 'demo',
             ),
+            'allen' => array(
+                'firstName' => 'Allen',
+                'lastName' => 'Luo',
+                'email' => 'liangchao.luo@symbio.com',
+                'pwd' => 'demo',
+            ),
             'xiemin' => array(
                 'firstName' => 'Min',
                 'lastName' => 'Xie',
