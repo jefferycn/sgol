@@ -282,16 +282,16 @@ class games extends Object {
         $owner_user_id = $game['owner_user_id'];
         $game_type_id = $game['game_type_id'];
         if($status == 1) {
-            if($owner_user_id == $uid) {
+            //if($owner_user_id == $uid) {
                 $assignments = $this->getGameAssignments($id);
                 $winner_role_id = $this->getWinnerRole($assignments);
                 if($winner_role_id) {
                     $this->saveWinner($id, $winner_role_id, 3);
                 }
                 $this->CalAdditionCredit($winner_role_id, $assignments, $adjust_nj);
-            }else {
-                return false;
-            }
+            //}else {
+                //return false;
+            //}
         }else {
             return false;
         }
