@@ -266,6 +266,16 @@ class games extends Object {
         return $id;
     }
 
+    public function oneonone() {
+        $id = $this->params('id', array(
+            'validate' => array(
+                'table' => 'games',
+                'field' => 'id',
+            )
+        ));
+        return $this->endGame($id, $this->userId, true);
+    }
+
     public function finish() {
         $id = $this->params('id', array(
             'validate' => array(
@@ -466,16 +476,6 @@ class games extends Object {
         $conn = $this->getDB();
         $conn->save($sql, $options);
         return $assignment_id;
-    }
-
-    public function oneonone() {
-        $id = $this->params('id', array(
-            'validate' => array(
-                'table' => 'games',
-                'field' => 'id',
-            )
-        ));
-        return $this->endGame($id, $userId, true);
     }
 
     public function ranking() {
