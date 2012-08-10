@@ -22,7 +22,7 @@
         <div data-role="page" id="observe">
             <div data-theme="a" data-role="header">
                 <h5>
-                    You are in game #<?php echo $id; ?>
+                    游戏 #<?php echo $id; ?>
                 </h5>
             </div>
             <div data-role="content" style="padding: 15px">
@@ -35,7 +35,7 @@ foreach($players as $item) {
 ?>
                     <div data-role="collapsible" data-collapsed="false">
                         <h3>
-                            <?php echo $username; ?> on seat: <?php echo $seat; ?>
+                            <?php echo $username; ?>
                         </h3>
 <?php
     if($status) {

@@ -22,7 +22,7 @@
         <div data-role="page" id="ranking">
             <div data-theme="a" data-role="header">
                 <h5>
-                    Ranking
+                    积分
                 </h5>
             </div>
             <div data-role="content" style="padding: 15px">

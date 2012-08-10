@@ -3,17 +3,17 @@
                     <ul>
                         <li>
                             <a href="/" data-theme="" data-icon="" class="ui-btn-active ui-state-persist">
-                                Home
+                                游戏
                             </a>
                         </li>
                         <li>
                             <a href="/games/getTypes" data-theme="" data-icon="">
-                                New
+                                新建
                             </a>
                         </li>
                         <li>
                             <a href="/games/ranking" data-theme="" data-icon="">
-                                Ranking
+                                积分
                             </a>
                         </li>
                     </ul>
