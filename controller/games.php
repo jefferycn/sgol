@@ -40,7 +40,7 @@ class games extends Object {
         if($conn->insert("games", $game)) {
             $gameId = $conn->lastInsertId();
             if($this->assign($gameId, $this->userId)) {
-                if($this->params('debug')) {
+                if($this->params('debug', array('noexception' => 1))) {
                     $this->assign($gameId, 2);
                     $this->assign($gameId, 3);
                     $this->assign($gameId, 4);
