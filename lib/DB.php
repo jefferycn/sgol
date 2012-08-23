@@ -2,13 +2,13 @@
 
 class DB extends PDO {
     private static $connection;
-    protected $queryString;
-    protected $options;
+    protected $folderSql;
 
     public function __construct($app) {
         $dsn = $app->config('DATABASE_DSN');
         $user = $app->config('DATABASE_USER');
         $passwd = $app->config('DATABASE_PASSWD');
+        $this->folderSql = $app->config('FOLDER_SQL');
 		parent::__construct($dsn, $user, $passwd);
     }
 
@@ -20,16 +20,16 @@ class DB extends PDO {
         }
     }
 
-    public function setQuery($sql) {
-        $this->queryString = $sql;
+    protected function getSql($name) {
+        $file = $this->folderSql . $name . ".sql";
+        if(!file_exists($file)) {
+            throw new exception("sql $name not defined.");
+        }
+        return file_get_contents($file);
     }
 
-    public function setOptions($options) {
-        $this->options = $options;
-    }
-
-    public function getRow($sql = '', $options = array()) {
-        $rows = $this->getRows($sql, $options);
+    public function getRow($name = '', $options = array()) {
+        $rows = $this->getRows($name, $options);
         if(is_array($rows)) {
             return array_pop($rows);
         }else {
@@ -37,8 +37,8 @@ class DB extends PDO {
         }
     }
 
-    public function getOne($sql = '', $options = array()) {
-        $row = $this->getRow($sql, $options);
+    public function getOne($name, $options = array()) {
+        $row = $this->getRow($name, $options);
         if(is_array($row)) {
             return array_pop($row);
         }else {
@@ -46,17 +46,12 @@ class DB extends PDO {
         }
     }
 
-    public function save($sql = '', $options = array()) {
-        return (boolean) $this->getStmt($sql, $options);
+    public function save($name, $options = array()) {
+        return (boolean) $this->getStmt($name, $options);
     }
 
-    public function getStmt($sql = '', $options = array()) {
-        if(empty($sql)) {
-            $sql = $this->queryString;
-        }
-        if(empty($options)) {
-            $options = $this->options;
-        }
+    public function getStmt($name, $options = array()) {
+        $sql = $this->getSql($name);
 
         $stmt = $this->prepare($sql);
         $stmt->setFetchMode(PDO::FETCH_ASSOC);
@@ -67,13 +62,8 @@ class DB extends PDO {
         }
     }
 
-    public function getRows($sql = '', $options = array()) {
-        if(empty($sql)) {
-            $sql = $this->queryString;
-        }
-        if(empty($options)) {
-            $options = $this->options;
-        }
+    public function getRows($name, $options = array()) {
+        $sql = $this->getSql($name);
 
         $stmt = $this->prepare($sql);
         $stmt->setFetchMode(PDO::FETCH_ASSOC);
@@ -84,8 +74,8 @@ class DB extends PDO {
         }
     }
 
-    public function getIndexedRows($indexBy, $sql = '', $options = array()) {
-        $stmt = $this->getStmt($sql, $options);
+    public function getIndexedRows($indexBy, $name, $options = array()) {
+        $stmt = $this->getStmt($name, $options);
         $stmt->setFetchMode(PDO::FETCH_ASSOC);
         if($stmt->execute($options)) {
             $items = array();
@@ -101,7 +91,7 @@ class DB extends PDO {
             }
             return $items;
         }else {
-            $this->dbErrorHandler($sql, $stmt->errorInfo());
+            $this->dbErrorHandler($name, $stmt->errorInfo());
         }
     }
 
