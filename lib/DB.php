@@ -20,15 +20,24 @@ class DB extends PDO {
         }
     }
 
-    protected function getSql($name) {
+    protected function getSql($options) {
+        if(is_array($options)) {
+            $name = array_shift($options);
+        }else {
+            $name = $options;
+        }
         $file = $this->folderSql . $name . ".sql";
         if(!file_exists($file)) {
             throw new exception("sql $name not defined.");
         }
-        return file_get_contents($file);
+        if(empty($options)) {
+            return file_get_contents($file);
+        }else {
+            return vsprintf(file_get_contents($file), $options);
+        }
     }
 
-    public function getRow($name = '', $options = array()) {
+    public function getRow($name, $options = array()) {
         $rows = $this->getRows($name, $options);
         if(is_array($rows)) {
             return array_pop($rows);
@@ -105,7 +114,12 @@ class DB extends PDO {
             implode(",", array_keys($insertData)),
             implode(",", array_fill(0, count($insertData), '?'))
         );
-        return $this->getStmt($sql, array_values($insertData));
+        $stmt = $this->prepare($sql);
+        if($stmt->execute(array_values($insertData))) {
+            return $this->lastInsertId();
+        }else {
+            $this->dbErrorHandler($sql, $stmt->errorInfo());
+        }
     }
 
     private function dbErrorHandler($sql, $errorInfo) {

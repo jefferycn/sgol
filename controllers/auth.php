@@ -18,7 +18,7 @@ class auth extends Object {
         $token['updated'] = time();
         $conn = $this->getDB();
         
-        if($conn->insert("tokens", $token)) {
+        if($id = $conn->insert("tokens", $token)) {
             $response = $token['token'];
         }else {
             $response = false;
@@ -56,9 +56,8 @@ class auth extends Object {
     public function tokenAlive($token) {
         $conn = $this->getDB();
         // todo: add expire checking
-        $sql = "select user_id from tokens where token = ? and user_id > 0";
         $options = array($token);
-        $userId = $conn->getOne($sql, $options);
+        $userId = $conn->getOne("auth_token_alive", $options);
         if(empty($userId)) {
             throw new exception('your token have been expired');
         }

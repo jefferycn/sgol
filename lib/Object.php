@@ -56,7 +56,12 @@ class Object {
             $conn = $this->getDB();
             $sql = "select count(*) from $table where $field = ?";
             $queryOption = array($data);
-            if($conn->getOne($sql, $queryOption)) {
+            $options = array(
+                'object_params',
+                $table,
+                $field,
+            );
+            if($conn->getOne($options, $queryOption)) {
                 return $data;
             }else {
                 return false;

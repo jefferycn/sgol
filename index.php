@@ -33,11 +33,17 @@ $app->notFound(function () use ($app) {
 });
 
 // special routes
+$app->get('/reload', function () use ($app) {
+    $conn = DB::getInstance($app);
+    $re = $conn->save("init");
+    var_dump($re);
+    var_dump(time());
+});
 
 // generic route
 // this kind of route will only contain uri like: /foo/bar
 
-$app->get('/[a-z]+(/[a-z]+)', function () use ($app) {
+$app->get('/[a-z]+(/[a-zA-Z]+)', function () use ($app) {
     $uri = $app->request()->getResourceUri();
     $items = explode("/", substr($uri, 1));
     switch(count($items)) {
@@ -53,7 +59,9 @@ $app->get('/[a-z]+(/[a-z]+)', function () use ($app) {
     if(class_exists($object)) {
         $controller = new $object($app);
         if(method_exists($controller, $method)) {
-            $controller->$method();
+            $response = $controller->$method();
+            $controller->setResponse($response);
+            $controller->display();
         }else {
             $app->pass();
         }
