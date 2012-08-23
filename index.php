@@ -1,5 +1,5 @@
 <?php
-require 'Slim/Slim.php';
+require 'lib/Slim-framework/Slim/Slim.php';
 $app = new Slim();
 
 $app->add(new Slim_Middleware_SessionCookie(array(
@@ -20,9 +20,9 @@ if(file_exists('config/config.php')) {
     require_once 'config/config.sample.php';
 }
 
-$app->error(function ( Exception $e ) use ($app) {
-	SlimException::exceptionHandler($e, $app);
-});
+//$app->error(function ( Exception $e ) use ($app) {
+	//SlimException::exceptionHandler($e, $app);
+//});
 
 $app->notFound(function () use ($app) {
     $error = new Error(1, 'Page Not Found', 'The page you are looking for could not be found');
@@ -32,123 +32,34 @@ $app->notFound(function () use ($app) {
     $response->display();
 });
 
-$app->get('/', function () use ($app) {
-    $users = new users($app);
-    if($user = $users->isLoggedIn()) {
-        $view = $app->view();
-        $token = $_SESSION['token'];
-        $app->config('token', $token);
-        $games = new games($app);
-        $view->setData('gameTypes', $games->getTypes());
-        $view->setData('games', $games->getAvailableGames());
-        $view->setData('user', $user);
-        $view->setData('token', $token);
-        $app->render("index.tpl");
-    }else {
-        $app->response()->redirect('/login');
+// special routes
+
+// generic route
+// this kind of route will only contain uri like: /foo/bar
+
+$app->get('/[a-z]+(/[a-z]+)', function () use ($app) {
+    $uri = $app->request()->getResourceUri();
+    $items = explode("/", substr($uri, 1));
+    switch(count($items)) {
+        case 1:
+            $object = array_shift($items);
+            $method = "index";
+            break;
+        case 2:
+            $object = array_shift($items);
+            $method = array_shift($items);
+            break;
     }
-});
-
-$app->get('/login', function () use ($app) {
-    $app->render("login.tpl");
-});
-
-
-$app->get('/auth(/:api)', function ($api = false) use ($app) {
-    if($api) {
-        $users = new users($app);
-        $auth = $users->auth();
-        $users->setResponse($auth);
-        $users->display();
-        exit;
-    }else {
-        $app->config('app_id', 'web');
-        $auth = new auth($app);
-        $token = $auth->requestToken();
-        $_SESSION['token'] = $token;
-        $app->config('token', $token);
-        $users = new users($app);
-        $auth = $users->auth();
-        if($auth) {
-            $_SESSION['user'] = $auth;
-            $app->response()->redirect('/');
+    if(class_exists($object)) {
+        $controller = new $object($app);
+        if(method_exists($controller, $method)) {
+            $controller->$method();
         }else {
-            $app->response()->redirect('/login');
+            $app->pass();
         }
-    }
-});
-
-$app->get('/users/info(/:api)', function ($api = false) use ($app) {
-    $users = new users($app);
-    $users->info();
-});
-
-$app->get('/games/:action(/:api)', function ($action, $api = false) use ($app) {
-    if($api) {
-        $games = new games($app);
-        $data = $games->$action();
-        $games->setResponse($data);
-        $games->display();
-        exit;
     }else {
-        $app->config('token', $_SESSION['token']);
-        $games = new games($app);
-        $data = $games->$action();
-        switch($action) {
-            case 'close':
-            case 'finish':
-            case 'oneonone':
-                $app->response()->redirect('/');
-                break;
-            case 'join':
-            case 'create':
-                $app->response()->redirect('/games/myrole?id=' . $data);
-                break;
-            case 'myrole':
-                $view = $app->view();
-                $view->setData('role', $data);
-                $app->render("myrole.tpl");
-                break;
-            case 'ranking':
-                $view = $app->view();
-                $view->setData('items', $data);
-                $app->render("ranking.tpl");
-                break;
-            case 'getTypes':
-                $view = $app->view();
-                $view->setData('types', $data);
-                $app->render("new.tpl");
-                break;
-            case 'observe':
-                $view = $app->view();
-                $view->setData($data);
-                $app->render("observe.tpl");
-                break;
-            case 'kill':
-                $view = $app->view();
-                $view->setData($data);
-                $app->render("kill.tpl");
-                break;
-            case 'killed':
-            case 'open':
-                $app->response()->redirect('/games/myrole?id=' . $data);
-                break;
-            default:
-        }
+        $app->pass();
     }
-});
-
-$app->get('/requestToken/api', function () use ($app) {
-    $auth = new auth($app);
-    $token = $auth->requestToken();
-    $auth->setResponse($token);
-    $auth->display();
-    exit;
-});
-
-$app->get('/reload', function () use ($app) {
-    $reload = new reload($app);
-    $reload->run();
 });
 
 $app->run();
