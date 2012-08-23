@@ -6,7 +6,7 @@ function autoload($name) {
 		return true;
 	}
 
-	if(file_exists($file = $root . 'controller/'. $name . '.php')) {
+	if(file_exists($file = $root . 'controllers/'. $name . '.php')) {
 		require_once $file;
 		return true;
 	}
